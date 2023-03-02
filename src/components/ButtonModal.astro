@@ -1,0 +1,28 @@
+---
+const {title, btnClasses, index, btnText, submit} = Astro.props
+---
+<label for={`modal${index}`} class={btnClasses} tabindex="0">{btnText}</label>
+
+<input type="checkbox" id={`modal${index}`} class="modal-toggle" />
+<div class="modal">
+    <form id={`modalForm${index}`} class="modal-box white-space-wrap">
+        <label for={`modal${index}`} class="btn btn-sm btn-circle absolute right-2 top-2">✕</label>
+        <h3 class="font-bold text-lg text-black mb-3">{title}</h3>
+        <slot />
+        <div class="modal-action">
+            <button type="submit" class="btn">Submit</button>
+        </div>
+    </form>
+</div>
+
+<script is:inline>
+    console.log(submit);
+    // const signup = document.getElementById(`modalForm${index}`);
+    // signup.addEventListener('submit', (event) => {
+    //     event.preventDefault();
+    //     const payload = {}
+    //     Array.from(signup.getElementsByTagName("input")).forEach(i => payload[i.name] = i.value);
+    //     submit(payload);
+    //     //console.log(payload);
+    // });
+</script>

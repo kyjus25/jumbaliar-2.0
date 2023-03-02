@@ -1,18 +1,49 @@
 ---
+import Table from "../components/Table.astro";
+import Authed from "../layouts/Authed.astro";
 
+const users = await fetch('http://localhost:3000/services/auth/user').then(i => i.json());
+console.log(users);
+
+const cols = [
+	{ field: "id", label: "ID" },
+	{ field: "firstName", label: "First Name"},
+	{ field: "lastName", label: "Last Name"}
+]
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<header class="flex justify-between items-center bg-black text-white">
-			JumbaLiar
-		</header>
-	</body>
-</html>
+<Authed title="Endpoints">
+	<div class="bg-black/20 rounded-xl p-4 mb-3">
+		<div class="flex items-center justify-between">
+			<button class="btn btn-sm btn-ghost">{'>'}</button>
+			<p>User</p>
+			<p class="bg-red-300 px-1 rounded text-black/80">Houston</p>
+			<p>Mar 14 2022</p>
+			<p>1 endpoints</p>
+			<div>
+				<button class="btn btn-sm">+</button>
+				<button class="btn btn-sm">view</button>
+				<button class="btn btn-sm">data</button>
+				<button class="btn btn-sm">*</button>
+				<button class="btn btn-sm">delete</button>
+			</div>
+		</div>
+	</div>
+	<div class="text-center">
+		<button class="btn btn-primary">New Model</button>
+	</div>
+	
+	<!-- <Table cols={cols} rows={users} name="Endpoints">
+		<div slot="header">
+			<button class="btn btn-primary btn-sm">Add</button>
+		</div>
+		<div slot="actions">
+			{(rowData: any) => (
+				<button class="btn btn-sm">Test</button>
+				<button class="btn btn-sm">Test</button>
+				<button class="btn btn-sm">Test</button>
+				<button class="btn btn-sm">Test</button>
+			)}
+		</div>
+	</Table> -->
+</Authed>

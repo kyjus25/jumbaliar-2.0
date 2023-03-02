@@ -2,7 +2,26 @@
 module.exports = {
 	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
 	theme: {
-		extend: {},
+		extend: {
+			colors: {
+				primary: "#F37950",
+				secondary: "#17212f"
+			}
+		},
 	},
-	plugins: [],
+	plugins: [require("daisyui")],
+	daisyui: {
+		themes: [
+			{
+				light: {
+					...require("daisyui/src/colors/themes")["[data-theme=light]"],
+					primary: "#F37950",
+					secondary: "#17212f",
+					// "primary-focus": "mediumblue",
+				  },
+			}
+		],
+		darkTheme: "light",
+
+	},
 }

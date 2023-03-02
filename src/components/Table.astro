@@ -1,0 +1,20 @@
+---
+const {rows, cols} = Astro.props;
+const getActions = async (data: any) => {
+    return await Astro.slots.render('actions', [data]);
+}
+---
+<table class="table table-zebra w-full text-black">
+    <tr>
+        {cols.map((i: any) => (<th>{i.label}</th>))}
+        <th>Actions</th>
+    </tr>
+    {rows.map((row: any) => 
+        <tr>
+            {cols.map((col: any) => (
+                <td>{row[col.field]}</td>
+            ))}
+            <td><Fragment set:html={getActions(row)} /></td>
+        </tr>
+    )}
+</table>

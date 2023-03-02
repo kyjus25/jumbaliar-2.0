@@ -58,11 +58,15 @@ const models = [
         data: [
             {
                 id: 1,
-                name: 'Justin'
+                firstName: 'Justin',
+                lastName: 'White',
+                username: 'juwhite'
             },
             {
                 id: 2,
-                name: 'Trey'
+                firstName: 'Trey',
+                lastName: 'Russel',
+                username: 'trussel'
             }
         ]
     }
@@ -71,7 +75,7 @@ const models = [
 const response = (payload: object) => ({ body: JSON.stringify(payload) })
 
 export const all: APIRoute = ({params, request}) => {
-    console.log(params, request.method, request);
+    // console.log(params, request.method, request);
 
     if (!params.path) { return new Response('Path cannot be empty.', { status: 400 }); }
 
