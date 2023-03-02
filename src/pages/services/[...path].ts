@@ -23,7 +23,7 @@ export interface Model {
 
 export interface Endpoint {
     id: number;
-    authenticated: boolean;
+    // authenticated: boolean;
     modelId: number;
     method: Method;
     path: string;
@@ -43,9 +43,9 @@ const endpoints: Endpoint[] = [
     {
         id: 1,
         modelId: 1,
-        authenticated: false,
+        // authenticated: false,
         method: Method.GET,
-        path: '/auth/users',
+        path: 'auth/user',
         conditionals: [
             {
                 if: '*',
@@ -69,15 +69,93 @@ const models = [
             }
         ]
     }
-]
+];
+
+const response = (payload: object) => {
+    return {
+        body: JSON.stringify(payload),
+    }
+}
 
 
 export const all: APIRoute = ({params, request}) => {
     console.log(params, request.method);
-    return {
-        body: JSON.stringify({
-          name: 'Astro 1',
-          url: 'https://astro.build/',
-        }),
+
+    if (!params.path) { return new Response('Path cannot be empty.', { status: 400 }); }
+
+    const method: Method = request.method as Method;
+    const path: string = params.path;
+
+    const endpoint = endpoints.find(i => i.method === method && i.path === path);
+    if (!endpoint) { return new Response('The specified endpoint could not be found.', { status: 404 }); }
+
+    // Conditional IF logic here, else return 404 also
+
+    const conditional = endpoint.conditionals[0];
+    switch(conditional.then.how) {
+        case 'RETURN':
+            switch(conditional.then.what) {
+                case 'DB':
+                    const model = models.find(i => i.id === endpoint.modelId);
+                    if (!model) { return new Response(`The specified model ${endpoint.modelId} could not be found.`, { status: 500 }); }
+                    switch(conditional.then.where) {
+                        case 'ALL':
+                            return response(model.data);
+                        case 'INDEX':
+                            if (!conditional.then.whereData) { return new Response(`The specified model ${endpoint.modelId} could not be found.`, { status: 500 }); }
+                            if (Number.isNaN(conditional.then.whereData)) { return new Response(`The specified index ${conditional.then.whereData} is not a number.`, { status: 500 }); }
+                            const index = model.data[parseInt(conditional.then.whereData)]
+                            if (!index) { return new Response(`The specified index ${conditional.then.whereData} does not exist.`, { status: 404 }); }
+                            return response(index);
+                        case 'PARAM':
+
+                            break;
+                    }
+                    break;
+                case 'BODY':
+                    // body
+                    break;
+                case 'ERROR':
+                    // whereData
+                    break;
+                case 'OBJECT':
+                    // whereData
+                    break;
+            }
+            break;
+        case 'PUSH':
+            switch(conditional.then.what) {
+                case 'BODY':
+                    break;
+                case 'OBJECT':
+                    // whereBody
+                    break;
+            }
+            break;
+        case 'UPDATE':
+            switch(conditional.then.what) {
+                case 'BODY':
+                    break;
+                case 'OBJECT':
+                    // whereBody
+                    break;
+            }
+            break;
+        case 'DELETE':
+            switch(conditional.then.what) {
+                case 'DB':
+                    switch(conditional.then.where) {
+                        case 'ALL':
+                            break;
+                        case 'INDEX':
+                            break;
+                        case 'PARAM':
+                            break;
+                    }
+                    break;
+            }
+            break;
     }
+
+    return new Response(`The specified conditional could not be found.`, { status: 500 });
 }
