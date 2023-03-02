@@ -8,13 +8,6 @@ export enum Method {
     DELETE = 'DELETE'
 }
 
-export enum ConditionalThen {
-    READ_DATA = 'READ_DATA',
-    PUT_DATA = 'PUT_DATA',
-    DELETE_DATA = 'DELETE_DATA',
-
-}
-
 export interface Model {
     id: string;
     name: string;
@@ -66,20 +59,19 @@ const models = [
             {
                 id: 1,
                 name: 'Justin'
+            },
+            {
+                id: 2,
+                name: 'Trey'
             }
         ]
     }
 ];
 
-const response = (payload: object) => {
-    return {
-        body: JSON.stringify(payload),
-    }
-}
-
+const response = (payload: object) => ({ body: JSON.stringify(payload) })
 
 export const all: APIRoute = ({params, request}) => {
-    console.log(params, request.method);
+    console.log(params, request.method, request);
 
     if (!params.path) { return new Response('Path cannot be empty.', { status: 400 }); }
 
@@ -108,10 +100,15 @@ export const all: APIRoute = ({params, request}) => {
                             if (!index) { return new Response(`The specified index ${conditional.then.whereData} does not exist.`, { status: 404 }); }
                             return response(index);
                         case 'PARAM':
-
-                            break;
+                            const params = Array.from(new URL(request.url).searchParams);
+                            if (Object.keys(params).length === 0) { return new Response(`No params to filter by.`, { status: 400 }); }
+                            let payload = model.data;
+                            params.forEach(([key, value]) => {
+                                payload = payload.map(i => i as any).filter(i => i[key] == value);
+                            })
+                            if (payload.length === 0) { return new Response(`No data matching the query.`, { status: 404 }); }
+                            return response(payload);
                     }
-                    break;
                 case 'BODY':
                     // body
                     break;
