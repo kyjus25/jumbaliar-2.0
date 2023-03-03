@@ -5,7 +5,8 @@ import DashboardComponent from '../layouts/dashboard.component';
   selector: 'app-applications',
   standalone: true,
   template: `
-    <layout-dashboard title="Applications">
+    <layout-dashboard>
+      <h1 class="text-2xl mb-3">Applications</h1>
       <p class="text-orange-500">Working Analog!</p>
     </layout-dashboard>
   `,

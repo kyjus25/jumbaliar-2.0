@@ -8,9 +8,11 @@ export enum Method {
 }
 
 export interface Model {
-    id: string;
+    id: number;
     name: string;
-    type: string;
+    type: object;
+    editable: boolean;
+    data: any[]
 }
 
 export interface Endpoint {
@@ -31,29 +33,54 @@ export interface Endpoint {
     }[]
 }
 
-const endpoints: Endpoint[] = [
+const models: Model[] = [
     {
         id: 1,
-        modelId: 1,
-        // authenticated: false,
-        method: Method.GET,
-        path: '/auth/user',
-        conditionals: [
+        name: "Endpoints",
+        editable: false,
+        type: {},
+        data: [
             {
-                if: '*',
-                then: {
-                    how: 'RETURN',
-                    what: 'DB',
-                    where: 'ALL'
-                }
+                id: 1,
+                // authenticated: false,
+                modelId: 2,
+                method: Method.GET,
+                path: '/users',
+                conditionals: [
+                    {
+                        if: '*',
+                        then: {
+                            how: 'RETURN',
+                            what: 'DB',
+                            where: 'ALL'
+                        }
+                    }
+                ]
+            },
+            {
+                id: 2,
+                // authenticated: false,
+                modelId: 3,
+                method: Method.GET,
+                path: '/models',
+                conditionals: [
+                    {
+                        if: '*',
+                        then: {
+                            how: 'RETURN',
+                            what: 'DB',
+                            where: 'ALL'
+                        }
+                    }
+                ]
             }
         ]
-    }
-];
-
-const models = [
+    },
     {
-        id: 1,
+        id: 2,
+        name: "Users",
+        editable: false,
+        type: {},
         data: [
             {
                 id: 1,
@@ -68,7 +95,18 @@ const models = [
                 username: 'trussel'
             }
         ]
-    }
+    },
+    {
+        id: 3,
+        name: "Models",
+        editable: false,
+        type: {},
+        data: [
+            {id: 1, name: "Endpoints", editable: false},
+            {id: 2, name: "Users", editable: false},
+            {id: 3, name: "Models", editable: false},
+        ]
+    },
 ];
 
 export default defineEventHandler((event) => {
@@ -84,7 +122,9 @@ export default defineEventHandler((event) => {
     const url: URL = new URL(`https://example${event.path}`)
     const path: string = url.pathname;
 
-    const endpoint = endpoints.find(i => i.method === method && i.path === path);
+    const endpointModel = models.find(i => i.name === 'Endpoints');
+    if (!endpointModel) { return response('The specified endpoint could not be found.', 404); }
+    const endpoint = endpointModel.data.find(i => i.method === method && i.path === path);
     if (!endpoint) { return response('The specified endpoint could not be found.', 404); }
 
     // Conditional IF logic here, else return 404 also

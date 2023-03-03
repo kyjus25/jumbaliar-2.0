@@ -25,7 +25,6 @@ import { AvatarModule } from 'primeng/avatar';
     </header>
     <p-menubar [model]="navItems"></p-menubar>
     <div class="container p-3 mx-auto max-w-5xl">
-        <h1 class="text-2xl mb-3">{{title}}</h1>
         <ng-content></ng-content>
     </div>
   `,
