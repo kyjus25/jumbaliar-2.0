@@ -3,10 +3,10 @@ import DashboardComponent from '../layouts/dashboard.component';
 import TableComponent from '../components/table.component';
 import { ButtonModule } from 'primeng/button';
 import { TreeModule } from 'primeng/tree';
-import { TreeNode } from 'primeng/api';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { catchError, map, of, startWith } from 'rxjs';
+import { map, Observable, startWith } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
+import { TreeNode } from 'primeng/api';
 
 @Component({
   selector: 'app-endpoints',
@@ -26,7 +26,7 @@ import { AsyncPipe } from '@angular/common';
             <h1 class="text-2xl">Endpoints</h1>
             <p-button icon="pi pi-plus" styleClass="p-button-sm" />
           </div>  
-          <app-table [cols]="cols" [rows]="models$" [actionTemplate]="actions">
+          <app-table [cols]="cols" [rows]="endpoints$ | async" [actionTemplate]="actions">
             <ng-template #actions let-rowData>
               Test wtd
             </ng-template>
@@ -51,8 +51,11 @@ export default class EndpointsComponent {
   public cols = [ 
     { field: 'id', header: 'Woo!' }
   ]
-  public models$: any = this.http.get<any[]>('/api/models').pipe(
-    startWith([]),
+  public models$: Observable<TreeNode[]> = this.http.get<any[]>('/api/models').pipe(
     map(i => i.map(j => ({label: j.name, icon: 'pi pi-lock'})))
-  )
+  );
+
+  public endpoints$: Observable<any[]> = this.http.get<any[]>('/api/endpoints').pipe(
+    
+  );
 }

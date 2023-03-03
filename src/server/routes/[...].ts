@@ -73,6 +73,23 @@ const models: Model[] = [
                         }
                     }
                 ]
+            },
+            {
+                id: 3,
+                // authenticated: false,
+                modelId: 1,
+                method: Method.GET,
+                path: '/endpoints',
+                conditionals: [
+                    {
+                        if: '*',
+                        then: {
+                            how: 'RETURN',
+                            what: 'DB',
+                            where: 'ALL'
+                        }
+                    }
+                ]
             }
         ]
     },
