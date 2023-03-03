@@ -72,7 +72,7 @@ export default class DashboardComponent {
         {
             icon: 'pi pi-globe',
             label: 'Swagger UI',
-            routerLink: '/swagger-ui'
+            command: () => window.open("/swagger-ui")
         }
     ];
 }
