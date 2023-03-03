@@ -1,5 +1,4 @@
-import type { APIRoute } from 'astro';
-
+import { defineEventHandler } from 'h3';
 export enum Method {
     GET = 'GET',
     POST = 'POST',
@@ -38,7 +37,7 @@ const endpoints: Endpoint[] = [
         modelId: 1,
         // authenticated: false,
         method: Method.GET,
-        path: 'auth/user',
+        path: '/auth/user',
         conditionals: [
             {
                 if: '*',
@@ -72,18 +71,21 @@ const models = [
     }
 ];
 
-const response = (payload: object) => ({ body: JSON.stringify(payload) })
+export default defineEventHandler((event) => {
 
-export const all: APIRoute = ({params, request}) => {
-    // console.log(params, request.method, request);
+    const response = (body: object | string = [], status: number = 200) => {
+        event.node.res.statusCode = status;
+        return body;
+    }
 
-    if (!params.path) { return new Response('Path cannot be empty.', { status: 400 }); }
+    if (!event.path) { return response('Path cannot be empty.', 400); }
 
-    const method: Method = request.method as Method;
-    const path: string = params.path;
+    const method = event.node.req.method as Method;
+    const url: URL = new URL(`https://example${event.path}`)
+    const path: string = url.pathname;
 
     const endpoint = endpoints.find(i => i.method === method && i.path === path);
-    if (!endpoint) { return new Response('The specified endpoint could not be found.', { status: 404 }); }
+    if (!endpoint) { return response('The specified endpoint could not be found.', 404); }
 
     // Conditional IF logic here, else return 404 also
 
@@ -93,24 +95,24 @@ export const all: APIRoute = ({params, request}) => {
             switch(conditional.then.what) {
                 case 'DB':
                     const model = models.find(i => i.id === endpoint.modelId);
-                    if (!model) { return new Response(`The specified model ${endpoint.modelId} could not be found.`, { status: 500 }); }
+                    if (!model) { return response(`The specified model ${endpoint.modelId} could not be found.`, 500); }
                     switch(conditional.then.where) {
                         case 'ALL':
                             return response(model.data);
                         case 'INDEX':
-                            if (!conditional.then.whereData) { return new Response(`The specified model ${endpoint.modelId} could not be found.`, { status: 500 }); }
-                            if (Number.isNaN(conditional.then.whereData)) { return new Response(`The specified index ${conditional.then.whereData} is not a number.`, { status: 500 }); }
+                            if (!conditional.then.whereData) { return response(`The specified model ${endpoint.modelId} could not be found.`, 500); }
+                            if (Number.isNaN(conditional.then.whereData)) { return response(`The specified index ${conditional.then.whereData} is not a number.`, 500); }
                             const index = model.data[parseInt(conditional.then.whereData)]
-                            if (!index) { return new Response(`The specified index ${conditional.then.whereData} does not exist.`, { status: 404 }); }
+                            if (!index) { return response(`The specified index ${conditional.then.whereData} does not exist.`, 404); }
                             return response(index);
                         case 'PARAM':
-                            const params = Array.from(new URL(request.url).searchParams);
-                            if (Object.keys(params).length === 0) { return new Response(`No params to filter by.`, { status: 400 }); }
+                            const params = Array.from(url.searchParams);
+                            if (Object.keys(params).length === 0) { return response(`No params to filter by.`, 400); }
                             let payload = model.data;
                             params.forEach(([key, value]) => {
                                 payload = payload.map(i => i as any).filter(i => i[key] == value);
                             })
-                            if (payload.length === 0) { return new Response(`No data matching the query.`, { status: 404 }); }
+                            if (payload.length === 0) { return response(`No data matching the query.`, 404); }
                             return response(payload);
                     }
                 case 'BODY':
@@ -159,4 +161,4 @@ export const all: APIRoute = ({params, request}) => {
     }
 
     return new Response(`The specified conditional could not be found.`, { status: 500 });
-}
+});

@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* PrimeNG overrides */
+
+p-menubar > div {
+  @apply !border-none !rounded-none !bg-black/10
+}
+
+p-menubar .p-menuitem-link-active {
+  @apply bg-white/10 pointer-events-none;
+}
+
+p-avatar > div {
+  @apply text-white mr-3;
+}
