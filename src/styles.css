@@ -15,3 +15,11 @@ p-menubar .p-menuitem-link-active {
 p-avatar > div {
   @apply text-white mr-3;
 }
+
+p-avatar > div {
+  @apply text-white mr-3;
+}
+
+.p-treenode-content > button {
+  @apply hidden;
+}

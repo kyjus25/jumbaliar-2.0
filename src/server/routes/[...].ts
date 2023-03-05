@@ -1,37 +1,6 @@
 import { defineEventHandler } from 'h3';
-export enum Method {
-    GET = 'GET',
-    POST = 'POST',
-    PUT = 'PUT',
-    PATCH = 'PATCH',
-    DELETE = 'DELETE'
-}
-
-export interface Model {
-    id: number;
-    name: string;
-    type: object;
-    editable: boolean;
-    data: any[]
-}
-
-export interface Endpoint {
-    id: number;
-    // authenticated: boolean;
-    modelId: number;
-    method: Method;
-    path: string;
-    conditionals: {
-        if: string,
-        then: {
-            how: 'RETURN' | 'PUSH' | 'UPDATE' | 'DELETE',
-            what: 'DB' | 'OBJECT' | 'BODY' | 'ERROR',
-            where: 'INDEX' | 'PARAM' | 'ALL',
-            whereData?: string,
-            returnData?: object
-        }
-    }[]
-}
+import { Method } from '../../app/types/method.type';
+import { Model } from '../../app/types/model.type';
 
 const models: Model[] = [
     {
@@ -46,6 +15,7 @@ const models: Model[] = [
                 modelId: 2,
                 method: Method.GET,
                 path: '/users',
+                applicationId: 1,
                 conditionals: [
                     {
                         if: '*',
@@ -63,6 +33,7 @@ const models: Model[] = [
                 modelId: 3,
                 method: Method.GET,
                 path: '/models',
+                applicationId: 1,
                 conditionals: [
                     {
                         if: '*',
@@ -80,6 +51,25 @@ const models: Model[] = [
                 modelId: 1,
                 method: Method.GET,
                 path: '/endpoints',
+                applicationId: 1,
+                conditionals: [
+                    {
+                        if: '*',
+                        then: {
+                            how: 'RETURN',
+                            what: 'DB',
+                            where: 'ALL'
+                        }
+                    }
+                ]
+            },
+            {
+                id: 4,
+                // authenticated: false,
+                modelId: 4,
+                method: Method.GET,
+                path: '/applications',
+                applicationId: 1,
                 conditionals: [
                     {
                         if: '*',
@@ -122,6 +112,16 @@ const models: Model[] = [
             {id: 1, name: "Endpoints", editable: false},
             {id: 2, name: "Users", editable: false},
             {id: 3, name: "Models", editable: false},
+            {id: 4, name: "Applications", editable: false},
+        ]
+    },
+    {
+        id: 4,
+        name: "Applications",
+        editable: false,
+        type: {},
+        data: [
+            {id: 1, name: "Global", editable: false},
         ]
     },
 ];
